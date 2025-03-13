@@ -1,13 +1,15 @@
-# PHPoker
-
+<p align="center">
+    <img src="https://github.com/PHPoker/Extension/blob/main/docs/logo-with-text.png?raw=true" height="300" alt="PHPoker Extension">
+    <p align="center">
+        <a href="https://github.com/PHPoker/Extension"><img alt="Total Downloads" src="https://img.shields.io/badge/version-1.0.5-blue.svg"></a>
+        <a href="https://www.php.net/license/3_01.txt"><img alt="License" src="https://img.shields.io/badge/license-PHP--3.01-blue.svg"></a>
+    </p>
+</p>
 A high-performance PHP extension for poker hand evaluation and equity calculation using the well-known "Two Plus Two" evaluation algorithm, originally developed by Kevin Suffecool.
-
-[![Latest Version](https://img.shields.io/badge/version-1.0.5-blue.svg)](https://github.com/PHPoker/PHPoker-Extension)
-[![License](https://img.shields.io/badge/license-PHP--3.01-blue.svg)](https://www.php.net/license/3_01.txt)
 
 ## Overview
 
-PHPoker provides fast poker hand evaluation and equity calculation directly from PHP. It implements Kevin Suffecool's poker hand evaluator algorithm (also known as the "Two Plus Two" evaluator), which uses perfect hashing and lookup tables to achieve O(1) performance for hand evaluation.
+The PHPoker Extension provides fast poker hand evaluation and equity calculation directly from PHP. It is a direct C implementation of Kevin Suffecool's poker hand evaluator algorithm (also known as the "Two Plus Two" evaluator), which uses perfect hashing and lookup tables to achieve O(1) performance for hand evaluation.
 
 ### Features
 
