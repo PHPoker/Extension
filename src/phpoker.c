@@ -7,6 +7,7 @@
 #include "ext/standard/info.h"
 #include "phpoker.h"
 #include "arrays.h"
+#include "zend_exceptions.h"  /* Added for exception support */
 
 ZEND_BEGIN_ARG_INFO(arginfo_poker_evaluate_hand, 0)
     ZEND_ARG_INFO(0, hand)
@@ -165,6 +166,21 @@ static unsigned short eval_5hand(int *hand) {
     return eval_5cards(hand[0], hand[1], hand[2], hand[3], hand[4]);
 }
 
+/* Evaluate a hand of 7 cards - finds the best 5-card hand */
+static unsigned short eval_7hand(int *hand) {
+    int i, j, subhand[5];
+    unsigned short q, best = 9999;
+
+    for (i = 0; i < 21; i++) {
+        for (j = 0; j < 5; j++)
+            subhand[j] = hand[perm7[i][j]];
+        q = eval_5hand(subhand);
+        if (q < best)
+            best = q;
+    }
+    return best;
+}
+
 /* Return the hand rank based on the evaluation value */
 static int hand_rank(unsigned short val) {
     if (val > 6185) return 9; /* High card */
@@ -221,7 +237,7 @@ PHP_FUNCTION(poker_evaluate_hand)
 {
     char *hand_str;
     size_t hand_len;
-    int cards[5];
+    int cards[7]; /* Increased max size to 7 */
     int num_cards;
     unsigned short eval_result;
     int hand_type;
@@ -232,15 +248,26 @@ PHP_FUNCTION(poker_evaluate_hand)
     }
 
     /* Parse the hand string into cards */
-    num_cards = parse_hand(hand_str, cards, 5);
+    num_cards = parse_hand(hand_str, cards, 7); /* Increased max size to 7 */
 
-    if (num_cards != 5) {
-        php_error_docref(NULL, E_WARNING, "Invalid hand format or incorrect number of cards (need exactly 5)");
+    /* Check for invalid cards */
+    if (num_cards == -1) {
+        zend_throw_exception(zend_ce_exception, "Invalid card format in hand", 0);
+        RETURN_NULL();
+    }
+
+    /* Check for correct number of cards */
+    if (num_cards != 5 && num_cards != 7) {
+        zend_throw_exception(zend_ce_exception, "Invalid number of cards (need exactly 5 or 7)", 0);
         RETURN_NULL();
     }
 
     /* Evaluate the hand */
-    eval_result = eval_5hand(cards);
+    if (num_cards == 5) {
+        eval_result = eval_5hand(cards);
+    } else { /* Must be 7 */
+        eval_result = eval_7hand(cards);
+    }
 
     /* Get the hand type */
     hand_type = hand_rank(eval_result);
@@ -250,4 +277,5 @@ PHP_FUNCTION(poker_evaluate_hand)
     add_assoc_long(return_value, "value", eval_result);
     add_assoc_long(return_value, "rank", hand_type);
     add_assoc_string(return_value, "name", (char*)get_hand_name(hand_type));
+    add_assoc_long(return_value, "cards", num_cards); /* Add card count to output */
 }
