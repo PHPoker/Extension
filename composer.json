@@ -1,0 +1,43 @@
+{
+  "name": "phpoker/extension",
+  "description": "A high-performance PHP extension for poker hand evaluation and equity calculation",
+  "keywords": ["php", "c", "poker", "hand evluator", "texas", "texas hold em", "hold em"],
+  "version": "1.0.5",
+  "type": "project",
+  "license": "PHP-3.01",
+  "authors": [
+    {
+      "name": "Nick Poulos",
+      "email": "nick@nickpoulos.info"
+    }
+  ],
+  "minimum-stability": "stable",
+  "require": {
+    "php": ">=8.0"
+  },
+  "require-dev": {
+    "pestphp/pest": "^2.36",
+    "pestphp/pest-plugin-arch": "^2.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "PHPoker\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Tests\\": "tests/"
+    }
+  },
+  "scripts": {
+    "test": "./vendor/bin/pest",
+    "test:coverage": "./vendor/bin/pest --coverage",
+    "build": "./build.sh"
+  },
+  "config": {
+    "sort-packages": true,
+    "allow-plugins": {
+      "pestphp/pest-plugin": true
+    }
+  }
+}
