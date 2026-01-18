@@ -50,7 +50,7 @@ brew install php@8.1 # or your PHP version
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/phpoker.git
+   git clone https://github.com/phpoker/phpoker.git
    cd phpoker
    ```
 
@@ -213,6 +213,8 @@ The extension includes test scripts that demonstrate its functionality:
 ```bash
 php test_poker_evaluate_hand.php
 php test_poker_calculate_equity.php
+composer test
+php benchmark.php
 ```
 
 ## How It Works
@@ -283,7 +285,7 @@ The main files to modify:
 
 1. **Make code changes**: Edit the source files in the `src/` directory
 2. **Build for testing**: Run `./build.sh` to compile
-3. **Test your changes**: Run the test scripts to verify functionality
+3. **Test your changes**: Run `composer test` and the test scripts to verify functionality
 4. **Memory testing**: Consider using Valgrind to check for memory leaks
 
 ### Common Development Tasks
