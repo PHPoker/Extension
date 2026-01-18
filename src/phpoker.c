@@ -523,11 +523,13 @@ PHP_FUNCTION(poker_calculate_equity)
 	/* Initialize the random seed for shuffling */
 	php_poker_init_random_seed();
 
-	/* Parse function arguments */
-	if (zend_parse_parameters(ZEND_NUM_ARGS(), "a|a!l!a!", &hole_cards_array, &board_cards_array,
-							  &iterations, &dead_cards_array) == FAILURE) {
-		RETURN_NULL();
-	}
+	ZEND_PARSE_PARAMETERS_START(1, 4)
+		Z_PARAM_ARRAY(hole_cards_array)
+		Z_PARAM_OPTIONAL
+		Z_PARAM_ARRAY_OR_NULL(board_cards_array)
+		Z_PARAM_LONG(iterations)
+		Z_PARAM_ARRAY_OR_NULL(dead_cards_array)
+	ZEND_PARSE_PARAMETERS_END();
 
 	/* Get hash tables from zvals */
 	hole_cards_hash = Z_ARRVAL_P(hole_cards_array);
@@ -649,8 +651,8 @@ PHP_FUNCTION(poker_calculate_equity)
 				RETURN_NULL();
 			}
 
-			/* Store the parsed card */
-			dead_cards[i] = temp_card[0];
+		/* Store the parsed card */
+		dead_cards[i] = temp_card[0];
 
 			/* Check for duplicates with used cards */
 			if (php_poker_card_exists(dead_cards[i], used_cards, used_cards_count)) {
@@ -658,8 +660,12 @@ PHP_FUNCTION(poker_calculate_equity)
 				RETURN_NULL();
 			}
 
-			/* Add to used cards */
-			used_cards[used_cards_count++] = dead_cards[i];
+		/* Add to used cards */
+		if (used_cards_count >= 52) {
+			zend_throw_exception(zend_ce_exception, "Too many used cards in play", 0);
+			RETURN_NULL();
+		}
+		used_cards[used_cards_count++] = dead_cards[i];
 
 			i++;
 		} ZEND_HASH_FOREACH_END();
@@ -667,8 +673,19 @@ PHP_FUNCTION(poker_calculate_equity)
 		dead_count = i;
 	}
 
+	/* Guard against impossible deck states */
+	if (used_cards_count > 52) {
+		zend_throw_exception(zend_ce_exception, "Too many used cards in play", 0);
+		RETURN_NULL();
+	}
+
 	/* Calculate how many more board cards we need to deal */
 	remaining_board_count = 5 - board_count;
+
+	if (used_cards_count + remaining_board_count > 52) {
+		zend_throw_exception(zend_ce_exception, "Not enough cards left in deck after removing used/dead cards", 0);
+		RETURN_NULL();
+	}
 
 	/* Prepare the deck (remove all used cards) */
 	remaining_deck_count = php_poker_prepare_deck(deck, used_cards, used_cards_count);
