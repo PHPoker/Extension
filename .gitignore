@@ -2,3 +2,4 @@
 /build/
 /.libs/
 /dist/
+/vendor/
