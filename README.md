@@ -50,7 +50,7 @@ brew install php@8.1 # or your PHP version
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/phpoker.git
+   git clone https://github.com/phpoker/phpoker.git
    cd phpoker
    ```
 
